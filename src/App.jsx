@@ -9,35 +9,7 @@ import Footer from './components/Footer';
 import './App.css';
 
 function App() {
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: 'AI Chat Platform',
-      description: 'Real-time chat application with AI-powered responses and natural language processing.',
-      repoUrl: 'https://github.com/example/ai-chat',
-      liveUrl: 'https://ai-chat-demo.vercel.app',
-      status: 'Production',
-      tags: ['React', 'Node.js', 'MongoDB', 'Socket.io'],
-    },
-    {
-      id: 2,
-      title: 'DevVault Dashboard',
-      description: 'High-end developer dashboard for managing and tracking coding projects.',
-      repoUrl: 'https://github.com/example/devvault',
-      liveUrl: 'https://devvault.dev',
-      status: 'Production',
-      tags: ['React', 'Tailwind', 'Framer Motion'],
-    },
-    {
-      id: 3,
-      title: 'E-Commerce Platform',
-      description: 'Full-stack e-commerce solution with payment integration and admin dashboard.',
-      repoUrl: 'https://github.com/example/ecommerce',
-      liveUrl: '',
-      status: 'Beta',
-      tags: ['MERN', 'Stripe', 'Redux'],
-    },
-  ]);
+  const [projects, setProjects] = useState([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('All');
