@@ -121,15 +121,4 @@ export default function Header({ onAddProject, onLogout, onProfileClick, isLogge
     </header>
   );
 }
-                onClick={onAddProject}
-                className="px-6 py-2 rounded-lg bg-gradient-to-r from-cyan-electric to-purple-cyber text-midnight font-semibold hover:shadow-glow-cyan transition-shadow"
-              >
-                + Add Project
-              </motion.button>
-            </>
-          )}
-        </motion.div>
-      </div>
-    </header>
-  );
-}
+                
