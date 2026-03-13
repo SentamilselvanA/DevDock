@@ -8,8 +8,12 @@ import {
   checkSingleProjectHealth,
   checkAllProjectsHealth,
 } from '../controllers/projectController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+// All routes require authentication
+router.use(authMiddleware);
 
 // CRUD Routes
 router.get('/', getAllProjects);

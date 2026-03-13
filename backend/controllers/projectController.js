@@ -1,10 +1,11 @@
 import Project from '../models/Project.js';
 import axios from 'axios';
 
-// Get all projects
+// Get all projects for the logged-in user
 export const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find().sort({ createdAt: -1 });
+    const userId = req.userId;
+    const projects = await Project.find({ userId }).sort({ createdAt: -1 });
     res.status(200).json({
       success: true,
       count: projects.length,
@@ -23,7 +24,8 @@ export const getAllProjects = async (req, res) => {
 export const getProjectById = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id);
+    const userId = req.userId;
+    const project = await Project.findOne({ _id: id, userId });
 
     if (!project) {
       return res.status(404).json({
@@ -49,6 +51,7 @@ export const getProjectById = async (req, res) => {
 export const createProject = async (req, res) => {
   try {
     const { title, description, repoUrl, liveUrl, tags, status } = req.body;
+    const userId = req.userId;
 
     // Validate required fields
     if (!title || !repoUrl) {
@@ -59,6 +62,7 @@ export const createProject = async (req, res) => {
     }
 
     const newProject = new Project({
+      userId,
       title,
       description,
       repoUrl,
@@ -88,9 +92,10 @@ export const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description, repoUrl, liveUrl, tags, status } = req.body;
+    const userId = req.userId;
 
-    const project = await Project.findByIdAndUpdate(
-      id,
+    const project = await Project.findOneAndUpdate(
+      { _id: id, userId },
       {
         title,
         description,
@@ -130,7 +135,8 @@ export const updateProject = async (req, res) => {
 export const deleteProject = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findByIdAndDelete(id);
+    const userId = req.userId;
+    const project = await Project.findOneAndDelete({ _id: id, userId });
 
     if (!project) {
       return res.status(404).json({
@@ -157,7 +163,8 @@ export const deleteProject = async (req, res) => {
 export const checkSingleProjectHealth = async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Project.findById(id);
+    const userId = req.userId;
+    const project = await Project.findOne({ _id: id, userId });
 
     if (!project) {
       return res.status(404).json({
@@ -201,7 +208,8 @@ export const checkSingleProjectHealth = async (req, res) => {
 // Check health status of all projects
 export const checkAllProjectsHealth = async (req, res) => {
   try {
-    const projects = await Project.find();
+    const userId = req.userId;
+    const projects = await Project.find({ userId });
 
     for (const project of projects) {
       if (project.liveUrl) {

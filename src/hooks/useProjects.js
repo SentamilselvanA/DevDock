@@ -1,7 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // API base URL - change this for production
 const API_BASE_URL = 'http://localhost:5000/api';
+
+// Helper function to get auth header
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 // Custom hook for projects API
 export const useProjects = () => {
@@ -14,7 +20,12 @@ export const useProjects = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/projects`);
+      const response = await fetch(`${API_BASE_URL}/projects`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
+      });
       if (!response.ok) throw new Error('Failed to fetch projects');
       const data = await response.json();
       setProjects(data.data || []);
@@ -31,7 +42,10 @@ export const useProjects = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
         body: JSON.stringify({
           title: projectData.title,
           description: projectData.description,
@@ -57,6 +71,10 @@ export const useProjects = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
       });
 
       if (!response.ok) throw new Error('Failed to delete project');
@@ -72,7 +90,10 @@ export const useProjects = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
         body: JSON.stringify(updates),
       });
 
@@ -89,7 +110,12 @@ export const useProjects = () => {
   // Check project health
   const checkProjectHealth = async (projectId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/projects/${projectId}/health`);
+      const response = await fetch(`${API_BASE_URL}/projects/${projectId}/health`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader(),
+        },
+      });
       if (!response.ok) throw new Error('Failed to check health');
       const data = await response.json();
       // Update the project in state
@@ -99,11 +125,6 @@ export const useProjects = () => {
       console.error('Error checking health:', err);
     }
   };
-
-  // Fetch projects on mount
-  useEffect(() => {
-    fetchProjects();
-  }, []);
 
   return {
     projects,

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from './components/Header';
 import SearchFilter from './components/SearchFilter';
@@ -6,14 +6,24 @@ import VaultCard from './components/VaultCard';
 import AddProjectModal from './components/AddProjectModal';
 import EmptyState from './components/EmptyState';
 import Footer from './components/Footer';
+import LoginModal from './components/LoginModal';
+import ProfileModal from './components/ProfileModal';
+import { useProjects } from './hooks/useProjects';
 import './App.css';
 
 function App() {
-  const [projects, setProjects] = useState([]);
-
+  const { projects, createProject, deleteProject, fetchProjects, loading, error } = useProjects();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+
+  // Fetch projects on component mount and when logged in changes
+  useEffect(() => {
+    fetchProjects();
+  }, [isLoggedIn]);
 
   // Filter projects based on search and tags
   const filteredProjects = useMemo(() => {
@@ -28,18 +38,41 @@ function App() {
     });
   }, [projects, searchQuery, selectedTag]);
 
-  const handleAddProject = (newProject) => {
-    const projectWithId = {
-      ...newProject,
-      id: projects.length + 1,
-    };
-    setProjects([...projects, projectWithId]);
+  const handleAddProject = async (newProject) => {
+    if (!isLoggedIn) {
+      setIsLoginOpen(true);
+      return;
+    }
+    
+    await createProject(newProject);
     setIsModalOpen(false);
   };
 
-  const handleDeleteProject = (projectId) => {
-    setProjects(projects.filter(project => project.id !== projectId));
+  const handleDeleteProject = async (projectId) => {
+    if (!isLoggedIn) {
+      setIsLoginOpen(true);
+      return;
+    }
+    
+    await deleteProject(projectId);
   };
+
+  const handleLogin = (token) => {
+    localStorage.setItem('token', token);
+    setIsLoggedIn(true);
+    setIsLoginOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setSearchQuery('');
+    setSelectedTag('All');
+  };
+
+  if (!isLoggedIn) {
+    return <LoginModal isOpen={!isLoggedIn} onLogin={handleLogin} />;
+  }
 
   return (
     <div className="min-h-screen bg-midnight text-white">
@@ -51,7 +84,12 @@ function App() {
 
       {/* Content */}
       <div className="relative z-10">
-        <Header onAddProject={() => setIsModalOpen(true)} />
+        <Header 
+          onAddProject={() => setIsModalOpen(true)} 
+          onLogout={handleLogout}
+          onProfileClick={() => setIsProfileOpen(true)}
+          isLoggedIn={isLoggedIn}
+        />
 
         <main className="max-w-7xl mx-auto px-6 py-12">
           <SearchFilter
@@ -59,7 +97,23 @@ function App() {
             onFilterTag={setSelectedTag}
           />
 
-          {filteredProjects.length === 0 ? (
+          {loading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <p className="text-gray-400 text-lg">Loading projects...</p>
+            </motion.div>
+          ) : error ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20"
+            >
+              <p className="text-red-400 text-lg">Error: {error}</p>
+            </motion.div>
+          ) : filteredProjects.length === 0 ? (
             searchQuery || selectedTag !== 'All' ? (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -90,7 +144,7 @@ function App() {
             >
               {filteredProjects.map((project, index) => (
                 <VaultCard
-                  key={project.id}
+                  key={project._id}
                   project={project}
                   index={index}
                   onDelete={handleDeleteProject}
@@ -103,12 +157,14 @@ function App() {
         <Footer />
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <AddProjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAdd={handleAddProject}
       />
+      <LoginModal isOpen={isLoginOpen} onLogin={handleLogin} />
+      <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
     </div>
   );
 }

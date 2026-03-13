@@ -34,7 +34,7 @@ export default function VaultCard({ project, index, onDelete }) {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => onDelete(project.id)}
+              onClick={() => onDelete(project._id)}
               className="ml-2 p-2 rounded-lg text-ruby-red hover:bg-ruby-red/20 transition-colors"
               title="Delete project"
             >
