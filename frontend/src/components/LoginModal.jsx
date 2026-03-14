@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../config/api';
 
 const LoginModal = ({ isOpen, onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,8 +12,6 @@ const LoginModal = ({ isOpen, onLogin }) => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
   const handleChange = (e) => {
     const { name, value } = e.target;

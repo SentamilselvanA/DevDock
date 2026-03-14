@@ -1,13 +1,5 @@
-import { useState } from 'react';
-
-// API base URL from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
-
-// Helper function to get auth header
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import { useState } from "react";
+import { API_BASE_URL, getAuthHeader } from "../config/api";
 
 // Custom hook for projects API
 export const useProjects = () => {
@@ -22,16 +14,16 @@ export const useProjects = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects`, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...getAuthHeader(),
         },
       });
-      if (!response.ok) throw new Error('Failed to fetch projects');
+      if (!response.ok) throw new Error("Failed to fetch projects");
       const data = await response.json();
       setProjects(data.data || []);
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching projects:', err);
+      console.error("Error fetching projects:", err);
     } finally {
       setLoading(false);
     }
@@ -41,9 +33,9 @@ export const useProjects = () => {
   const createProject = async (projectData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...getAuthHeader(),
         },
         body: JSON.stringify({
@@ -52,17 +44,17 @@ export const useProjects = () => {
           repoUrl: projectData.repoUrl,
           liveUrl: projectData.liveUrl,
           tags: projectData.tags,
-          status: projectData.status || 'In Progress',
+          status: projectData.status || "In Progress",
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to create project');
+      if (!response.ok) throw new Error("Failed to create project");
       const data = await response.json();
       setProjects([...projects, data.data]);
       return data.data;
     } catch (err) {
       setError(err.message);
-      console.error('Error creating project:', err);
+      console.error("Error creating project:", err);
     }
   };
 
@@ -70,18 +62,18 @@ export const useProjects = () => {
   const deleteProject = async (projectId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...getAuthHeader(),
         },
       });
 
-      if (!response.ok) throw new Error('Failed to delete project');
-      setProjects(projects.filter(p => p._id !== projectId));
+      if (!response.ok) throw new Error("Failed to delete project");
+      setProjects(projects.filter((p) => p._id !== projectId));
     } catch (err) {
       setError(err.message);
-      console.error('Error deleting project:', err);
+      console.error("Error deleting project:", err);
     }
   };
 
@@ -89,40 +81,42 @@ export const useProjects = () => {
   const updateProject = async (projectId, updates) => {
     try {
       const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...getAuthHeader(),
         },
         body: JSON.stringify(updates),
       });
 
-      if (!response.ok) throw new Error('Failed to update project');
+      if (!response.ok) throw new Error("Failed to update project");
       const data = await response.json();
-      setProjects(projects.map(p => p._id === projectId ? data.data : p));
+      setProjects(projects.map((p) => (p._id === projectId ? data.data : p)));
       return data.data;
     } catch (err) {
       setError(err.message);
-      console.error('Error updating project:', err);
+      console.error("Error updating project:", err);
     }
   };
 
   // Check project health
   const checkProjectHealth = async (projectId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/projects/${projectId}/health`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeader(),
+      const response = await fetch(
+        `${API_BASE_URL}/projects/${projectId}/health`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeader(),
+          },
         },
-      });
-      if (!response.ok) throw new Error('Failed to check health');
+      );
+      if (!response.ok) throw new Error("Failed to check health");
       const data = await response.json();
-      // Update the project in state
-      setProjects(projects.map(p => p._id === projectId ? data.data : p));
+      setProjects(projects.map((p) => (p._id === projectId ? data.data : p)));
       return data.data;
     } catch (err) {
-      console.error('Error checking health:', err);
+      console.error("Error checking health:", err);
     }
   };
 
