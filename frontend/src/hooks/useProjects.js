@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-// API base URL - change this for production
-const API_BASE_URL = 'http://localhost:5000/api';
+// API base URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
 // Helper function to get auth header
 const getAuthHeader = () => {

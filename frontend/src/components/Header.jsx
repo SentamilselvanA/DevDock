@@ -15,7 +15,8 @@ export default function Header({ onAddProject, onLogout, onProfileClick, isLogge
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
+      const response = await fetch(`${API_BASE_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
