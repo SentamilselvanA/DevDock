@@ -19,7 +19,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editMode, setEditMode] = useState(false);
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
   useEffect(() => {
     if (isOpen) {
