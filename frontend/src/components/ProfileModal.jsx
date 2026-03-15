@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../config/api';
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const [profileData, setProfileData] = useState({
@@ -19,7 +20,6 @@ const ProfileModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editMode, setEditMode] = useState(false);
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
   useEffect(() => {
     if (isOpen) {

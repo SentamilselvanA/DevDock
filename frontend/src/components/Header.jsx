@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../config/api';
 
 export default function Header({ onAddProject, onLogout, onProfileClick, isLoggedIn }) {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -15,7 +14,6 @@ export default function Header({ onAddProject, onLogout, onProfileClick, isLogge
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
       const response = await fetch(`${API_BASE_URL}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
